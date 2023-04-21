@@ -3,11 +3,14 @@
 #include <QPrintDialog>
 #include <QPrintPreviewDialog>
 #include "lc_partselectionwidget.h"
+#include "lc_qhubloaddialog.h"
 #include "lc_timelinewidget.h"
 #include "lc_viewwidget.h"
 #include "lc_qcolorlist.h"
 #include "lc_qpropertiestree.h"
 #include "lc_qutils.h"
+#include "lc_qhubloaddialog.h"
+#include "lc_qhubpushdialog.h"
 #include "lc_qupdatedialog.h"
 #include "lc_qaboutdialog.h"
 #include "lc_setsdatabasedialog.h"
@@ -145,6 +148,18 @@ void lcMainWindow::CreateActions()
 	mActions[LC_FILE_NEW]->setToolTip(tr("New Model"));
 	mActions[LC_FILE_OPEN]->setToolTip(tr("Open Model"));
 	mActions[LC_FILE_SAVE]->setToolTip(tr("Save Model"));
+
+    mActions[LC_HUB_PUSH]->setDisabled(true);
+
+    QIcon HubLoadIcon;
+    HubLoadIcon.addFile(":/resources/hub_load.png");
+    HubLoadIcon.addFile(":/resources/hub_load_16.png");
+    mActions[LC_HUB_LOAD]->setIcon(HubLoadIcon);
+
+    QIcon HubPushIcon;
+    HubPushIcon.addFile(":/resources/hub_push.png");
+    HubPushIcon.addFile(":/resources/hub_push_16.png");
+    mActions[LC_HUB_PUSH]->setIcon(HubPushIcon);
 
 	QIcon FileNewIcon;
 	FileNewIcon.addFile(":/resources/file_new.png");
@@ -443,6 +458,9 @@ void lcMainWindow::CreateMenus()
 	ExportMenu->addAction(mActions[LC_FILE_EXPORT_POVRAY]);
 	ExportMenu->addAction(mActions[LC_FILE_EXPORT_WAVEFRONT]);
 	FileMenu->addSeparator();
+    FileMenu->addAction(mActions[LC_HUB_LOAD]);
+    FileMenu->addAction(mActions[LC_HUB_PUSH]);
+    FileMenu->addSeparator();
 	FileMenu->addAction(mActions[LC_FILE_RENDER]);
 	FileMenu->addAction(mActions[LC_FILE_INSTRUCTIONS]);
 	FileMenu->addAction(mActions[LC_FILE_PRINT]);
@@ -560,7 +578,7 @@ void lcMainWindow::CreateMenus()
 #ifndef Q_OS_MACOS
 	HelpMenu->addSeparator();
 #endif
-	HelpMenu->addAction(mActions[LC_HELP_ABOUT]);
+    HelpMenu->addAction(mActions[LC_HELP_ABOUT]);
 }
 
 void lcMainWindow::CreateToolBars()
@@ -2286,10 +2304,55 @@ void lcMainWindow::UpdateShortcuts()
 		mActions[ActionIdx]->setShortcut(QKeySequence(gKeyboardShortcuts.mShortcuts[ActionIdx]));
 }
 
+void lcMainWindow::LoadFromHub()
+{
+    if (!SaveProjectIfModified())
+        return;
+
+    lcQHubLoadDialog Dialog(this);
+
+    if (Dialog.exec() == QDialog::Accepted)
+    {
+        QString name("hub.ldr");
+
+        QFile file(name);
+
+        if (file.open(QIODevice::WriteOnly))
+        {
+            file.write(Dialog.getModel().toUtf8());
+            file.close();
+
+            OpenProjectFile(name);
+
+            mActions[LC_HUB_PUSH]->setEnabled(true);
+        }
+        else
+        {
+            qInfo() << "Cannot open file";
+        }
+    }
+}
+
+void lcMainWindow::PushToHub()
+{
+    if (!SaveProjectIfModified())
+        return;
+
+    lcStep step = GetActiveModel()->GetLastStep();
+
+    GetActiveModel()->SaveStepImages("hub.png", false, false, 1000, 1000, step, step);
+
+    lcQHubPushDialog Dialog(this);
+
+    Dialog.exec();
+}
+
 void lcMainWindow::NewProject()
 {
 	if (!SaveProjectIfModified())
-		return;
+        return;
+
+    mActions[LC_HUB_PUSH]->setDisabled(true);
 
 	Project* NewProject = new Project();
 	gApplication->SetProject(NewProject);
@@ -2300,6 +2363,8 @@ bool lcMainWindow::OpenProject(const QString& FileName)
 {
 	if (!SaveProjectIfModified())
 		return false;
+
+    mActions[LC_HUB_PUSH]->setDisabled(true);
 
 	QString LoadFileName = FileName;
 
@@ -2325,6 +2390,8 @@ void lcMainWindow::OpenRecentProject(int RecentFileIndex)
 {
 	if (!SaveProjectIfModified())
 		return;
+
+    mActions[LC_HUB_PUSH]->setDisabled(true);
 
 	if (!OpenProjectFile(mRecentFiles[RecentFileIndex]))
 		RemoveRecentFile(RecentFileIndex);
@@ -2542,7 +2609,15 @@ void lcMainWindow::HandleCommand(lcCommandId CommandId)
 	lcModel* ActiveModel = ActiveView ? ActiveView->GetActiveModel() : nullptr;
 
 	switch (CommandId)
-	{
+    {
+    case LC_HUB_LOAD:
+        LoadFromHub();
+        break;
+
+    case LC_HUB_PUSH:
+        PushToHub();
+        break;
+
 	case LC_FILE_NEW:
 		NewProject();
 		break;

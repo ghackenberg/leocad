@@ -239,6 +239,9 @@ public:
 	void ToggleGrid();
 	void ToggleFadePreviousSteps();
 
+    void LoadFromHub();
+    void PushToHub();
+
 	void NewProject();
 	bool OpenProject(const QString& FileName);
 	void OpenRecentProject(int RecentFileIndex);

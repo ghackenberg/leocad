@@ -136,5 +136,9 @@
         <file>resources/shaders/unlit_view_sphere_vs.glsl</file>
         <file>resources/gear_in.png</file>
         <file>resources/flexible.png</file>
+        <file>resources/hub_load.png</file>
+        <file>resources/hub_load_16.png</file>
+        <file>resources/hub_push.png</file>
+        <file>resources/hub_push_16.png</file>
     </qresource>
 </RCC>

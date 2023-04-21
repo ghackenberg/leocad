@@ -2,6 +2,8 @@
 
 enum lcCommandId
 {
+    LC_HUB_LOAD,
+    LC_HUB_PUSH,
 	LC_FILE_NEW,
 	LC_FILE_OPEN,
 	LC_FILE_MERGE,

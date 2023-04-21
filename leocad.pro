@@ -165,6 +165,8 @@ macx {
 }
 
 SOURCES += \
+	common/hub.cpp \
+	common/product.cpp \
 	common/texfont.cpp \
 	common/project.cpp \
 	common/pieceinf.cpp \
@@ -211,6 +213,10 @@ SOURCES += \
 	common/image.cpp \
 	common/group.cpp \
 	common/camera.cpp \
+	common/user.cpp \
+	common/version.cpp \
+	qt/lc_qhubloaddialog.cpp \
+	qt/lc_qhubpushdialog.cpp \
 	qt/system.cpp \
 	qt/qtmain.cpp \
 	qt/lc_qarraydialog.cpp \
@@ -233,6 +239,8 @@ SOURCES += \
 	qt/lc_setsdatabasedialog.cpp \
 	common/lc_partpalettedialog.cpp
 HEADERS += \
+	common/hub.h \
+	common/product.h \
 	common/texfont.h \
 	common/project.h \
 	common/pieceinf.h \
@@ -282,10 +290,14 @@ HEADERS += \
 	common/image.h \
 	common/group.h \
 	common/camera.h \
+	common/user.h \
+	common/version.h \
 	qt/lc_qarraydialog.h \
 	qt/lc_qgroupdialog.h \
 	qt/lc_qaboutdialog.h \
 	qt/lc_qeditgroupsdialog.h \
+	qt/lc_qhubloaddialog.h \
+	qt/lc_qhubpushdialog.h \
 	qt/lc_qselectdialog.h \
 	qt/lc_qpropertiesdialog.h \
 	qt/lc_qhtmldialog.h \
@@ -306,6 +318,8 @@ FORMS += \
 	qt/lc_qgroupdialog.ui \
 	qt/lc_qaboutdialog.ui \
 	qt/lc_qeditgroupsdialog.ui \
+	qt/lc_qhubloaddialog.ui \
+	qt/lc_qhubpushdialog.ui \
 	qt/lc_qselectdialog.ui \
 	qt/lc_qpropertiesdialog.ui \
 	qt/lc_qhtmldialog.ui \

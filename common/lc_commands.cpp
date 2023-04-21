@@ -3,6 +3,20 @@
 
 const lcCommand gCommands[] =
 {
+    // LC_HUB_LOAD
+    {
+         QT_TRANSLATE_NOOP("Action", "Hub.Load"),
+         QT_TRANSLATE_NOOP("Menu", "ProductBoard &Load"),
+         QT_TRANSLATE_NOOP("Status", "Load model from ProductBoard"),
+         ""
+    },
+    // LC_HUB_PUSH
+    {
+        QT_TRANSLATE_NOOP("Action", "Hub.Commit"),
+        QT_TRANSLATE_NOOP("Menu", "ProductBoard &Commit"),
+        QT_TRANSLATE_NOOP("Status", "Commit model to ProductBoard"),
+        ""
+    },
 	// LC_FILE_NEW
 	{
 		QT_TRANSLATE_NOOP("Action", "File.New"),
