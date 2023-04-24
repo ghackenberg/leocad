@@ -33,7 +33,7 @@ lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
 
-    setWindowTitle("Load model from LeoHub");
+    setWindowTitle("Load model from ProductBoard");
 }
 
 lcQHubLoadDialog::~lcQHubLoadDialog()
@@ -209,8 +209,6 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
         }
         else
         {
-            qInfo() << "Test";
-
             image.loadFromData(reply->readAll());
 
             int height = ui->VersionList->height();
