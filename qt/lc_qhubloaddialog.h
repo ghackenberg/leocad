@@ -25,11 +25,15 @@ public:
 public slots:
     void accept() override;
 
+protected slots:
     void finished(QNetworkReply* reply);
 
     void on_LoadButton_clicked();
     void on_ProductList_itemSelectionChanged();
     void on_VersionList_itemSelectionChanged();
+
+protected:
+    void resizeEvent(QResizeEvent* event) override;
 
 private:
     Ui::lcQHubLoadDialog* ui;
@@ -39,6 +43,7 @@ private:
     QList<Product> products;
     QList<Version> versions;
 
+    QPixmap image;
     QString model;
 };
 
