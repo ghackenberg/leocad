@@ -2338,10 +2338,6 @@ void lcMainWindow::PushToHub()
     if (!SaveProjectIfModified())
         return;
 
-    lcStep step = GetActiveModel()->GetLastStep();
-
-    GetActiveModel()->SaveStepImages("hub.png", false, false, 1000, 1000, step, step);
-
     lcQHubPushDialog Dialog(this);
 
     Dialog.exec();

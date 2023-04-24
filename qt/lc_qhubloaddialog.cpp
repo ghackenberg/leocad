@@ -49,30 +49,46 @@ void lcQHubLoadDialog::accept()
 
         const Version& version = versions[index];
 
-        if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
+        if (version.isEmpty())
         {
-            QString path("/rest/files/");
-            path.append(version.getId());
-            path.append(".");
-            path.append(version.getModelType());
+            model = "";
+            model.append("0\n");
+            model.append("0 Name: ");
+            model.append(Product::get().getName());
+            model.append(".ldr\n");
+            model.append("0 Author: ");
+            model.append("TODO");
+            model.append("\n");
 
-            QUrl url;
-            url.setScheme(Hub::get().getScheme());
-            url.setHost(Hub::get().getHost());
-            url.setPort(Hub::get().getPort());
-            url.setPath(path);
-
-            QString bearer("Bearer ");
-            bearer.append(Hub::get().getToken());
-
-            QNetworkRequest request(url);
-            request.setRawHeader("Authorization", bearer.toUtf8());
-
-            nam->get(request);
+            QDialog::accept();
         }
         else
         {
-            ui->ErrorLabel->setText("Model type not supported");
+            if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
+            {
+                QString path("/rest/files/");
+                path.append(version.getId());
+                path.append(".");
+                path.append(version.getModelType());
+
+                QUrl url;
+                url.setScheme(Hub::get().getScheme());
+                url.setHost(Hub::get().getHost());
+                url.setPort(Hub::get().getPort());
+                url.setPath(path);
+
+                QString bearer("Bearer ");
+                bearer.append(Hub::get().getToken());
+
+                QNetworkRequest request(url);
+                request.setRawHeader("Authorization", bearer.toUtf8());
+
+                nam->get(request);
+            }
+            else
+            {
+                ui->ErrorLabel->setText("Model type not supported");
+            }
         }
     }
     else
@@ -187,8 +203,6 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
     }
     else if (reply->request().url().path().endsWith("png"))
     {
-        qInfo() << "Test";
-
         if (reply->error())
         {
             ui->ErrorLabel->setText(reply->errorString());

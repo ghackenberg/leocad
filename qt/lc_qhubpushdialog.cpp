@@ -83,18 +83,6 @@ void lcQHubPushDialog::accept()
 
     multipart->append(modelPart);
 
-    QFile *imageFile = new QFile("hub.png");
-    imageFile->open(QIODevice::ReadOnly);
-
-    imageFile->setParent(multipart);
-
-    QHttpPart imagePart;
-    imagePart.setHeader(QNetworkRequest::ContentTypeHeader, "image/png");
-    imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"image\"; filename=\"hub.png\""));
-    imagePart.setBodyDevice(imageFile);
-
-    multipart->append(imagePart);
-
     QNetworkReply* reply = nam->post(request, multipart);
 
     multipart->setParent(reply);
