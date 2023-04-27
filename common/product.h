@@ -27,6 +27,10 @@ public:
     {
         return id;
     }
+    inline const QString& getUserId() const
+    {
+        return userId;
+    }
     inline const QString& getName() const
     {
         return name;
@@ -45,6 +49,9 @@ public:
 
 private:
     QString id;
+
+    QString userId;
+
     QString name;
     QString description;
 

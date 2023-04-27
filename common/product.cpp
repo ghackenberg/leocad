@@ -6,6 +6,7 @@ Product::Product(const QJsonObject& object)
     : empty(false)
 {
     id = object.value("id").toString();
+    userId = object.value("userId").toString();
     name = object.value("name").toString();
     description = object.value("description").toString();
 }

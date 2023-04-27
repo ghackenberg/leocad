@@ -55,6 +55,14 @@ public:
         return patch;
     }
 
+    inline QString getNumber() const
+    {
+        QString a = QString::number(major);
+        QString b = QString::number(minor);
+        QString c = QString::number(patch);
+        return a.append(".").append(b).append(".").append(c);
+    }
+
     inline const QString& getTime() const
     {
         return time;
@@ -73,7 +81,7 @@ public:
         return imageType;
     }
 
-    inline const bool isEmpty() const
+    inline bool isEmpty() const
     {
         return empty;
     }
