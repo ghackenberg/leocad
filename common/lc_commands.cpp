@@ -6,15 +6,15 @@ const lcCommand gCommands[] =
     // LC_HUB_LOAD
     {
          QT_TRANSLATE_NOOP("Action", "Hub.Load"),
-         QT_TRANSLATE_NOOP("Menu", "ProductBoard &Load"),
-         QT_TRANSLATE_NOOP("Status", "Load model from ProductBoard"),
+         QT_TRANSLATE_NOOP("Menu", "CADdrive &Load"),
+         QT_TRANSLATE_NOOP("Status", "Load model from CADdrive"),
          ""
     },
     // LC_HUB_PUSH
     {
         QT_TRANSLATE_NOOP("Action", "Hub.Commit"),
-        QT_TRANSLATE_NOOP("Menu", "ProductBoard &Commit"),
-        QT_TRANSLATE_NOOP("Status", "Commit model to ProductBoard"),
+        QT_TRANSLATE_NOOP("Menu", "CADdrive &Commit"),
+        QT_TRANSLATE_NOOP("Status", "Commit model to CADdrive"),
         ""
     },
 	// LC_FILE_NEW

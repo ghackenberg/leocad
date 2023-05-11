@@ -33,7 +33,7 @@ lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
 
-    setWindowTitle("Load model from ProductBoard");
+    setWindowTitle("Load model from CADdrive");
 }
 
 lcQHubLoadDialog::~lcQHubLoadDialog()
@@ -233,6 +233,8 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
 
 void lcQHubLoadDialog::on_LoadButton_clicked()
 {
+    qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString();
+
     Hub::get().setScheme(ui->SchemeCombo->currentText());
     Hub::get().setHost(ui->HostEdit->text());
     Hub::get().setPort(ui->PortSpin->value());

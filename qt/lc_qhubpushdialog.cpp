@@ -23,7 +23,7 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
 
-    setWindowTitle("Push model to ProductBoard");
+    setWindowTitle("Push model to CADdrive");
 }
 
 lcQHubPushDialog::~lcQHubPushDialog()

@@ -77,7 +77,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="HubLabel">
        <property name="text">
-        <string>Hub</string>
+        <string>Server</string>
        </property>
       </widget>
      </item>
