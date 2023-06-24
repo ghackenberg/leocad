@@ -36,6 +36,8 @@ private:
 
     QNetworkAccessManager* nam;
 
+    QList<Version> versions;
+
     Version version;
 
     QPixmap image;

@@ -14,14 +14,12 @@ lcQHubMergeDialog::lcQHubMergeDialog(QWidget *parent) :
 
     ui->ProductEdit->setText(Product::INSTANCE.toString());
 
-    ui->CurrentVersionsList->clear();
     for (QList<Version>::const_iterator iter = Version::BASES.cbegin(); iter != Version::BASES.cend(); iter++)
     {
         const Version version = (*iter);
         ui->CurrentVersionsList->addItem(version.toString());
     }
 
-    ui->AdditionalVersionList->clear();
     for (QList<Version>::const_iterator outerIter = Version::INSTANCES.cbegin(); outerIter != Version::INSTANCES.cend(); outerIter++)
     {
         const Version outerVersion = (*outerIter);
@@ -41,6 +39,8 @@ lcQHubMergeDialog::lcQHubMergeDialog(QWidget *parent) :
 
         if (!skip)
         {
+            versions.append(outerVersion);
+
             ui->AdditionalVersionList->addItem(outerVersion.toString());
         }
     }
@@ -141,7 +141,7 @@ void lcQHubMergeDialog::on_AdditionalVersionList_itemSelectionChanged()
     {
         int index = ui->AdditionalVersionList->currentRow();
 
-        version = Version::INSTANCES[index];
+        version = versions[index];
 
         QString path("/rest/files/");
         path.append(version.getId());
