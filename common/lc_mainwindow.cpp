@@ -2391,7 +2391,6 @@ void lcMainWindow::HubMerge()
 
     if (Dialog.exec() == QDialog::Accepted)
     {
-        /*
         QString name("hub_merge.ldr");
 
         QFile file(name);
@@ -2423,7 +2422,6 @@ void lcMainWindow::HubMerge()
         {
             qInfo() << "Cannot open file";
         }
-        */
     }
 }
 
