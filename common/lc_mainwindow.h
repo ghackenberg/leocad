@@ -239,8 +239,13 @@ public:
 	void ToggleGrid();
 	void ToggleFadePreviousSteps();
 
-    void LoadFromHub();
-    void PushToHub();
+    // Hub start
+
+    void HubLoad();
+    void HubMerge();
+    void HubPush();
+
+    // Hub end
 
 	void NewProject();
 	bool OpenProject(const QString& FileName);

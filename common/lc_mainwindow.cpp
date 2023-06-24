@@ -145,10 +145,38 @@ void lcMainWindow::CreateActions()
 		mActions[CommandIdx] = Action;
 	}
 
-	mActions[LC_FILE_NEW]->setToolTip(tr("New Model"));
-	mActions[LC_FILE_OPEN]->setToolTip(tr("Open Model"));
-	mActions[LC_FILE_SAVE]->setToolTip(tr("Save Model"));
+    // Hub start
 
+    /*
+    QFile file(".hub.json");
+
+    QString jwt;
+
+    if (file.exists())
+    {
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+        QString json = file.readAll();
+
+        file.close();
+
+        QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+
+        if (doc.isObject())
+        {
+            QJsonObject object = doc.object();
+
+            QJsonValue value = object.value("jwt");
+
+            if (value.isString())
+            {
+                jwt = value.toString();
+            }
+        }
+    }
+    */
+
+    mActions[LC_HUB_MERGE]->setDisabled(true);
     mActions[LC_HUB_PUSH]->setDisabled(true);
 
     QIcon HubLoadIcon;
@@ -156,10 +184,21 @@ void lcMainWindow::CreateActions()
     HubLoadIcon.addFile(":/resources/hub_load_16.png");
     mActions[LC_HUB_LOAD]->setIcon(HubLoadIcon);
 
+    QIcon HubMergeIcon;
+    HubMergeIcon.addFile(":/resources/hub_merge.png");
+    HubMergeIcon.addFile(":/resources/hub_merge_16.png");
+    mActions[LC_HUB_MERGE]->setIcon(HubMergeIcon);
+
     QIcon HubPushIcon;
     HubPushIcon.addFile(":/resources/hub_push.png");
     HubPushIcon.addFile(":/resources/hub_push_16.png");
     mActions[LC_HUB_PUSH]->setIcon(HubPushIcon);
+
+    // Hub end
+
+	mActions[LC_FILE_NEW]->setToolTip(tr("New Model"));
+	mActions[LC_FILE_OPEN]->setToolTip(tr("Open Model"));
+    mActions[LC_FILE_SAVE]->setToolTip(tr("Save Model"));
 
 	QIcon FileNewIcon;
 	FileNewIcon.addFile(":/resources/file_new.png");
@@ -438,6 +477,15 @@ void lcMainWindow::CreateMenus()
 	mToolsMenu->addAction(mActions[LC_EDIT_ACTION_ROLL]);
 	mToolsMenu->addAction(mActions[LC_EDIT_ACTION_ZOOM_REGION]);
 
+    // Hub start
+
+    QMenu* HubMenu = menuBar()->addMenu(tr("&CADdrive"));
+    HubMenu->addAction(mActions[LC_HUB_LOAD]);
+    HubMenu->addAction(mActions[LC_HUB_MERGE]);
+    HubMenu->addAction(mActions[LC_HUB_PUSH]);
+
+    // Hub end
+
 	QMenu* FileMenu = menuBar()->addMenu(tr("&File"));
 	FileMenu->addAction(mActions[LC_FILE_NEW]);
 	FileMenu->addAction(mActions[LC_FILE_OPEN]);
@@ -456,10 +504,7 @@ void lcMainWindow::CreateMenus()
 	ExportMenu->addAction(mActions[LC_FILE_EXPORT_CSV]);
 	ExportMenu->addAction(mActions[LC_FILE_EXPORT_HTML]);
 	ExportMenu->addAction(mActions[LC_FILE_EXPORT_POVRAY]);
-	ExportMenu->addAction(mActions[LC_FILE_EXPORT_WAVEFRONT]);
-	FileMenu->addSeparator();
-    FileMenu->addAction(mActions[LC_HUB_LOAD]);
-    FileMenu->addAction(mActions[LC_HUB_PUSH]);
+    ExportMenu->addAction(mActions[LC_FILE_EXPORT_WAVEFRONT]);
     FileMenu->addSeparator();
 	FileMenu->addAction(mActions[LC_FILE_RENDER]);
 	FileMenu->addAction(mActions[LC_FILE_INSTRUCTIONS]);
@@ -471,7 +516,7 @@ void lcMainWindow::CreateMenus()
 	FileMenu->addAction(mActions[LC_FILE_RECENT3]);
 	FileMenu->addAction(mActions[LC_FILE_RECENT4]);
 	mActionFileRecentSeparator = FileMenu->addSeparator();
-	FileMenu->addAction(mActions[LC_FILE_EXIT]);
+    FileMenu->addAction(mActions[LC_FILE_EXIT]);
 
 	QMenu* EditMenu = menuBar()->addMenu(tr("&Edit"));
 	EditMenu->addAction(mActions[LC_EDIT_UNDO]);
@@ -2304,7 +2349,9 @@ void lcMainWindow::UpdateShortcuts()
 		mActions[ActionIdx]->setShortcut(QKeySequence(gKeyboardShortcuts.mShortcuts[ActionIdx]));
 }
 
-void lcMainWindow::LoadFromHub()
+// Hub start
+
+void lcMainWindow::HubLoad()
 {
     if (!SaveProjectIfModified())
         return;
@@ -2324,6 +2371,7 @@ void lcMainWindow::LoadFromHub()
 
             OpenProjectFile(name);
 
+            mActions[LC_HUB_MERGE]->setEnabled(true);
             mActions[LC_HUB_PUSH]->setEnabled(true);
         }
         else
@@ -2333,7 +2381,13 @@ void lcMainWindow::LoadFromHub()
     }
 }
 
-void lcMainWindow::PushToHub()
+void lcMainWindow::HubMerge()
+{
+    if (!SaveProjectIfModified())
+        return;
+}
+
+void lcMainWindow::HubPush()
 {
     if (!SaveProjectIfModified())
         return;
@@ -2343,12 +2397,19 @@ void lcMainWindow::PushToHub()
     Dialog.exec();
 }
 
+// Hub end
+
 void lcMainWindow::NewProject()
 {
 	if (!SaveProjectIfModified())
         return;
 
+    // Hub start
+
+    mActions[LC_HUB_MERGE]->setDisabled(true);
     mActions[LC_HUB_PUSH]->setDisabled(true);
+
+    // Hub end
 
 	Project* NewProject = new Project();
 	gApplication->SetProject(NewProject);
@@ -2358,9 +2419,14 @@ void lcMainWindow::NewProject()
 bool lcMainWindow::OpenProject(const QString& FileName)
 {
 	if (!SaveProjectIfModified())
-		return false;
+        return false;
 
+    // Hub start
+
+    mActions[LC_HUB_MERGE]->setDisabled(true);
     mActions[LC_HUB_PUSH]->setDisabled(true);
+
+    // Hub end
 
 	QString LoadFileName = FileName;
 
@@ -2385,9 +2451,14 @@ bool lcMainWindow::OpenProject(const QString& FileName)
 void lcMainWindow::OpenRecentProject(int RecentFileIndex)
 {
 	if (!SaveProjectIfModified())
-		return;
+        return;
 
+    // Hub start
+
+    mActions[LC_HUB_MERGE]->setDisabled(true);
     mActions[LC_HUB_PUSH]->setDisabled(true);
+
+    // Hub end
 
 	if (!OpenProjectFile(mRecentFiles[RecentFileIndex]))
 		RemoveRecentFile(RecentFileIndex);
@@ -2606,13 +2677,21 @@ void lcMainWindow::HandleCommand(lcCommandId CommandId)
 
 	switch (CommandId)
     {
+    // Hub start
+
     case LC_HUB_LOAD:
-        LoadFromHub();
+        HubLoad();
+        break;
+
+    case LC_HUB_MERGE:
+        HubMerge();
         break;
 
     case LC_HUB_PUSH:
-        PushToHub();
+        HubPush();
         break;
+
+    // Hub end
 
 	case LC_FILE_NEW:
 		NewProject();

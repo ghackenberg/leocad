@@ -140,5 +140,7 @@
         <file>resources/hub_load_16.png</file>
         <file>resources/hub_push.png</file>
         <file>resources/hub_push_16.png</file>
+        <file>resources/hub_merge.png</file>
+        <file>resources/hub_merge_16.png</file>
     </qresource>
 </RCC>
