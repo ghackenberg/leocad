@@ -269,6 +269,7 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
                 Version version(object);
 
                 Hub::INSTANCE.setToken(ui->TokenEdit->text());
+                Hub::INSTANCE.save();
 
                 Version::INSTANCES.clear();
                 Version::INSTANCES.append(version);

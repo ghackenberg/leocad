@@ -182,6 +182,7 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
         else
         {
             Hub::INSTANCE.setToken(ui->TokenEdit->text());
+            Hub::INSTANCE.save();
 
             Version::INSTANCES.append(version);
 

@@ -51,6 +51,7 @@ void lcQHubLoadDialog::accept()
         Hub::INSTANCE.setHost(ui->HostEdit->text());
         Hub::INSTANCE.setPort(ui->PortSpin->value());
         Hub::INSTANCE.setToken(ui->TokenEdit->text());
+        Hub::INSTANCE.save();
 
         // Update product
         Product::INSTANCE = product;
@@ -225,6 +226,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
             Hub::INSTANCE.setHost(ui->HostEdit->text());
             Hub::INSTANCE.setPort(ui->PortSpin->value());
             Hub::INSTANCE.setToken(ui->TokenEdit->text());
+            Hub::INSTANCE.save();
 
             // Update product
             Product::INSTANCE = product;

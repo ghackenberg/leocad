@@ -6,6 +6,9 @@ public:
     static Hub INSTANCE;
 
 public:
+    void load();
+    void save() const;
+
     inline void setScheme(const QString& scheme)
     {
         this->scheme = scheme;
