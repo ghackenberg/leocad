@@ -49,7 +49,7 @@
    <item>
     <widget class="QLabel" name="CurrentVersionsLabel">
      <property name="text">
-      <string>Current Base Versions</string>
+      <string>Current base versions</string>
      </property>
     </widget>
    </item>
@@ -63,7 +63,7 @@
    <item>
     <widget class="QLabel" name="AdditionalVersionLabel">
      <property name="text">
-      <string>Additional Base Version</string>
+      <string>Additional base version</string>
      </property>
     </widget>
    </item>

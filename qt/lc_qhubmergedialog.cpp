@@ -83,7 +83,7 @@ void lcQHubMergeDialog::accept()
     }
     else
     {
-        ui->ErrorLabel->setText("Model type not supported");
+        ui->ErrorLabel->setText("Model type is not supported");
     }
 }
 
@@ -139,13 +139,20 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
                     }
                 }
 
-                ui->AdditionalVersionLabel->setEnabled(true);
+                if (versions.empty())
+                {
+                    ui->AdditionalVersionList->addItem("No additional versions found");
+                }
+                else
+                {
+                    ui->AdditionalVersionLabel->setEnabled(true);
 
-                ui->AdditionalVersionList->setEnabled(true);
+                    ui->AdditionalVersionList->setEnabled(true);
+                }
             }
             else
             {
-                ui->AdditionalVersionList->addItem("Reponse invalid.");
+                ui->AdditionalVersionList->addItem("CADdrive response is not supported");
             }
         }
     }

@@ -95,7 +95,7 @@ void lcQHubLoadDialog::accept()
         }
         else
         {
-            ui->ErrorLabel->setText("Model type not supported");
+            ui->ErrorLabel->setText("Model type is not supported");
         }
     }
 }
@@ -122,7 +122,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
 
                 if (array.empty())
                 {
-                    ui->ProductList->addItem("Please create a product first");
+                    ui->ProductList->addItem("No products found");
                 }
                 else
                 {
@@ -149,7 +149,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
             }
             else
             {
-                ui->ProductList->addItem("Reponse invalid");
+                ui->ProductList->addItem("CADdrive response is not supported");
             }
         }
     }
@@ -193,7 +193,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
             }
             else
             {
-                ui->VersionList->addItem("Reponse invalid.");
+                ui->VersionList->addItem("CADdrive response is not supported");
             }
         }
     }

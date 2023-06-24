@@ -21,6 +21,8 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
         ui->BaseVersionList->addItem(version.toString());
     }
 
+    ui->NumberLabel->setDisabled(true);
+
     ui->MajorLabel->setDisabled(true);
     ui->MinorLabel->setDisabled(true);
     ui->PatchLabel->setDisabled(true);
@@ -223,6 +225,8 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
                     patch = patch + 1;
                 }
 
+                ui->NumberLabel->setDisabled(false);
+
                 ui->MajorSpin->setValue(major);
                 ui->MinorSpin->setValue(minor);
                 ui->PatchSpin->setValue(patch);
@@ -241,7 +245,7 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
             }
             else
             {
-                ui->ErrorLabel->setText("Reponse invalid.");
+                ui->ErrorLabel->setText("CADdrive response is not supported");
             }
         }
     }
@@ -269,7 +273,7 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
             }
             else
             {
-                ui->ErrorLabel->setText("Server response not supported");
+                ui->ErrorLabel->setText("CADdrive response is not supported");
             }
         }
     }
