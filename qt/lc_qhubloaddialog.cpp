@@ -2,6 +2,8 @@
 #include "hub.h"
 #include "lc_qhubloaddialog.h"
 #include "ui_lc_qhubloaddialog.h"
+#include "product.h"
+#include "version.h"
 
 lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
     : QDialog(Parent), ui(new Ui::lcQHubLoadDialog), nam(new QNetworkAccessManager), image(1000, 1000)
@@ -47,14 +49,12 @@ void lcQHubLoadDialog::accept()
     {
         int index = ui->VersionList->currentRow();
 
-        const Version& version = versions[index];
-
-        if (version.isEmpty())
+        if (index == 0)
         {
             model = "";
             model.append("0\n");
             model.append("0 Name: ");
-            model.append(Product::get().getName());
+            model.append(Product::INSTANCE.getName());
             model.append(".ldr\n");
             model.append("0 Author: ");
             model.append("TODO");
@@ -64,6 +64,8 @@ void lcQHubLoadDialog::accept()
         }
         else
         {
+            const Version& version = Version::INSTANCES[index - 1];
+
             if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
             {
                 QString path("/rest/files/");
@@ -90,19 +92,6 @@ void lcQHubLoadDialog::accept()
                 ui->ErrorLabel->setText("Model type not supported");
             }
         }
-    }
-    else
-    {
-        model = "";
-        model.append("0\n");
-        model.append("0 Name: ");
-        model.append(Product::get().getName());
-        model.append(".ldr\n");
-        model.append("0 Author: ");
-        model.append("TODO");
-        model.append("\n");
-
-        QDialog::accept();
     }
 }
 
@@ -142,7 +131,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
 
                             ui->ProductList->insertItem(0, product.toString());
 
-                            products.insert(0, product);
+                            Product::INSTANCES.insert(0, product);
                         }
                     }
 
@@ -184,13 +173,11 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
 
                         ui->VersionList->insertItem(0, version.toString());
 
-                        versions.insert(0, version);
+                        Version::INSTANCES.insert(0, version);
                     }
                 }
 
                 ui->VersionList->insertItem(0, "Start from scratch");
-
-                versions.insert(0, Version());
 
                 ui->VersionList->setEnabled(true);
                 ui->VersionLabel->setEnabled(true);
@@ -265,13 +252,15 @@ void lcQHubLoadDialog::on_ProductList_itemSelectionChanged()
     ui->VersionList->setDisabled(true);
     ui->VersionLabel->setDisabled(true);
 
-    Version::set(Version());
+    Version::INSTANCES.clear();
+
+    Version::BASES.clear();
 
     if (ui->ProductList->selectedItems().size() == 1)
     {
         int index = ui->ProductList->currentRow();
 
-        const Product& product = products[index];
+        const Product& product = Product::INSTANCES[index];
 
         QUrlQuery query;
         query.addQueryItem("product", product.getId());
@@ -291,11 +280,11 @@ void lcQHubLoadDialog::on_ProductList_itemSelectionChanged()
 
         nam->get(request);
 
-        Product::set(product);
+        Product::INSTANCE = product;
     }
     else
     {
-        Product::set(Product());
+        Product::INSTANCE = Product();
     }
 }
 
@@ -311,14 +300,16 @@ void lcQHubLoadDialog::on_VersionList_itemSelectionChanged()
 
     ui->ErrorLabel->setText("");
 
+    Version::BASES.clear();
+
     if (ui->VersionList->selectedItems().size() == 1)
     {
         int index = ui->VersionList->currentRow();
 
-        const Version& version = versions[index];
-
-        if (!version.isEmpty())
+        if (index > 0)
         {
+            const Version& version = Version::INSTANCES[index - 1];
+
             QString path("/rest/files/");
             path.append(version.getId());
             path.append(".");
@@ -337,16 +328,14 @@ void lcQHubLoadDialog::on_VersionList_itemSelectionChanged()
             request.setRawHeader("Authorization", bearer.toUtf8());
 
             nam->get(request);
-        }
 
-        Version::set(version);
+            Version::BASES.append(version);
+        }
 
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     }
     else
     {
-        Version::set(Version());
-
         ui->buttonBox->button(QDialogButtonBox::Ok)->setDisabled(true);
     }
 }

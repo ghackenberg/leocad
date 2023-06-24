@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QNetworkAccessManager>
-#include "product.h"
-#include "version.h"
 
 namespace Ui
 {
@@ -39,9 +37,6 @@ private:
     Ui::lcQHubLoadDialog* ui;
 
     QNetworkAccessManager* nam;
-
-    QList<Product> products;
-    QList<Version> versions;
 
     QPixmap image;
     QString model;

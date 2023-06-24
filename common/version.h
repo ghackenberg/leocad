@@ -3,17 +3,8 @@
 class Version
 {
 public:
-    static const Version& get()
-    {
-        return INSTANCE;
-    }
-    static void set(const Version& version)
-    {
-        INSTANCE = version;
-    }
-
-private:
-    static Version INSTANCE;
+    static QList<Version> INSTANCES;
+    static QList<Version> BASES;
 
 public:
     Version()

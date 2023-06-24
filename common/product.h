@@ -3,16 +3,8 @@
 class Product
 {
 public:
-    static const Product& get()
-    {
-        return INSTANCE;
-    }
-    static void set(const Product& product)
-    {
-        INSTANCE = product;
-    }
+    static QList<Product> INSTANCES;
 
-private:
     static Product INSTANCE;
 
 public:
