@@ -13,6 +13,8 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
 
     ui->HubEdit->setText(Hub::INSTANCE.toString());
 
+    ui->TokenEdit->setText(Hub::INSTANCE.getToken());
+
     ui->ProductEdit->setText(Product::INSTANCE.toString());
 
     for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
