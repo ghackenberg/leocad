@@ -89,6 +89,8 @@ void lcQHubMergeDialog::accept()
 
 void lcQHubMergeDialog::finished(QNetworkReply* reply)
 {
+    qInfo() << "[lcQHubMergeDialog] " << reply->request().url();
+
     if (reply->request().url().path().endsWith("/rest/versions"))
     {
         if (reply->error())
@@ -130,7 +132,7 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
 
                         if (!skip)
                         {
-                            versions.insert(0, version);
+                            versions.insert(0, outerVersion);
 
                             ui->AdditionalVersionList->insertItem(0, outerVersion.toString());
                         }

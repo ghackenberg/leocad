@@ -102,6 +102,8 @@ void lcQHubLoadDialog::accept()
 
 void lcQHubLoadDialog::finished(QNetworkReply* reply)
 {
+    qInfo() << "[lcQHubLoadDialog] " << reply->request().url();
+
     if (reply->request().url().path().endsWith("/rest/products"))
     {
         if (reply->error())

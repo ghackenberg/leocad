@@ -121,6 +121,8 @@ void lcQHubPushDialog::accept()
 
 void lcQHubPushDialog::finished(QNetworkReply* reply)
 {
+    qInfo() << "[lcQHubPushDialog] " << reply->request().url();
+
     if (reply->request().url().path().endsWith("/rest/versions") && reply->request().url().hasQuery())
     {
         if (reply->error())
