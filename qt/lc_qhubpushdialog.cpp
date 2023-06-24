@@ -106,14 +106,14 @@ void lcQHubPushDialog::accept()
 
     multipart->append(dataPart);
 
-    QFile *modelFile = new QFile("hub.ldr");
+    QFile *modelFile = new QFile(QDir::homePath() + "/CADdrive.ldr");
     modelFile->open(QIODevice::ReadOnly);
 
     modelFile->setParent(multipart);
 
     QHttpPart modelPart;
     modelPart.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-ldraw");
-    modelPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"model\"; filename=\"hub.ldr\""));
+    modelPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"model\"; filename=\"CADdrive.ldr\""));
     modelPart.setBodyDevice(modelFile);
 
     multipart->append(modelPart);
