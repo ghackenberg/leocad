@@ -47,7 +47,7 @@ lcQHubMergeDialog::lcQHubMergeDialog(QWidget *parent) :
     url.setQuery(query);
 
     QString bearer("Bearer ");
-    bearer.append(Hub::INSTANCE.getToken());
+    bearer.append(ui->TokenEdit->text());
 
     QNetworkRequest request(url);
     request.setRawHeader("Authorization", bearer.toUtf8());
@@ -76,7 +76,7 @@ void lcQHubMergeDialog::accept()
         url.setPath(path);
 
         QString bearer("Bearer ");
-        bearer.append(Hub::INSTANCE.getToken());
+        bearer.append(ui->TokenEdit->text());
 
         QNetworkRequest request(url);
         request.setRawHeader("Authorization", bearer.toUtf8());
@@ -181,6 +181,8 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
         }
         else
         {
+            Hub::INSTANCE.setToken(ui->TokenEdit->text());
+
             Version::INSTANCES.append(version);
 
             model = reply->readAll();
@@ -221,7 +223,7 @@ void lcQHubMergeDialog::on_AdditionalVersionList_itemSelectionChanged()
         url.setPath(path);
 
         QString bearer("Bearer ");
-        bearer.append(Hub::INSTANCE.getToken());
+        bearer.append(ui->TokenEdit->text());
 
         QNetworkRequest request(url);
         request.setRawHeader("Authorization", bearer.toUtf8());

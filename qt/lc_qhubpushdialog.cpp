@@ -52,7 +52,7 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
     url.setQuery(query);
 
     QString bearer("Bearer ");
-    bearer.append(Hub::INSTANCE.getToken());
+    bearer.append(ui->TokenEdit->text());
 
     QNetworkRequest request(url);
     request.setRawHeader("Authorization", bearer.toUtf8());
@@ -74,7 +74,7 @@ void lcQHubPushDialog::accept()
     url.setPath("/rest/versions");
 
     QString bearer("Bearer ");
-    bearer.append(Hub::INSTANCE.getToken());
+    bearer.append(ui->TokenEdit->text());
 
     QNetworkRequest request(url);
     request.setRawHeader("Authorization", bearer.toUtf8());
@@ -267,6 +267,8 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
                 QJsonObject object = document.object();
 
                 Version version(object);
+
+                Hub::INSTANCE.setToken(ui->TokenEdit->text());
 
                 Version::INSTANCES.clear();
                 Version::INSTANCES.append(version);
