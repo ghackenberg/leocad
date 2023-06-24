@@ -27,6 +27,7 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
 
     if (Version::BASES.empty())
     {
+        // Find latest major version
         for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
         {
             const Version version = (*iter);
@@ -45,10 +46,14 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
                 }
             }
         }
+        // Increase latest major version
         major = major + 1;
+        minor = 0;
+        patch = 0;
     }
     else
     {
+        // Find latest major base version
         for (QList<Version>::const_iterator iter = Version::BASES.cbegin(); iter != Version::BASES.cend(); iter++)
         {
             const Version version = (*iter);
@@ -67,6 +72,19 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
                 }
             }
         }
+        // Find latest patch version for that major version
+        for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
+        {
+            const Version version = (*iter);
+            if (major == version.getMajor()) {
+                if (minor == version.getMinor()) {
+                    if (patch < version.getPatch()) {
+                        patch = version.getPatch();
+                    }
+                }
+            }
+        }
+        // Increase latest patch version
         patch = patch + 1;
     }
 
