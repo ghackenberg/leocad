@@ -3,12 +3,6 @@
 class Hub
 {
 public:
-    inline static Hub& get()
-    {
-        return INSTANCE;
-    }
-
-private:
     static Hub INSTANCE;
 
 public:

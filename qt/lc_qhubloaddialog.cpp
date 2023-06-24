@@ -2,8 +2,6 @@
 #include "lc_qhubloaddialog.h"
 #include "ui_lc_qhubloaddialog.h"
 #include "hub.h"
-#include "product.h"
-#include "version.h"
 
 lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
     : QDialog(Parent), ui(new Ui::lcQHubLoadDialog), nam(new QNetworkAccessManager), image(1000, 1000)
@@ -12,13 +10,13 @@ lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
 
     ui->SchemeCombo->addItem("http");
     ui->SchemeCombo->addItem("https");
-    ui->SchemeCombo->setCurrentText(Hub::get().getScheme());
+    ui->SchemeCombo->setCurrentText(Hub::INSTANCE.getScheme());
 
-    ui->HostEdit->setText(Hub::get().getHost());
+    ui->HostEdit->setText(Hub::INSTANCE.getHost());
 
-    ui->PortSpin->setValue(Hub::get().getPort());
+    ui->PortSpin->setValue(Hub::INSTANCE.getPort());
 
-    ui->TokenEdit->setText(Hub::get().getToken());
+    ui->TokenEdit->setText(Hub::INSTANCE.getToken());
 
     ui->ProductList->setDisabled(true);
     ui->ProductLabel->setDisabled(true);
@@ -28,7 +26,9 @@ lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
     int height = ui->VersionList->height();
 
     ui->VersionList->setDisabled(true);
+
     ui->VersionImage->setPixmap(image.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
     ui->VersionLabel->setDisabled(true);
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setDisabled(true);
@@ -43,52 +43,45 @@ lcQHubLoadDialog::~lcQHubLoadDialog()
 
 void lcQHubLoadDialog::accept()
 {
-    if (ui->VersionList->selectedItems().size() == 1)
+    if (version.isEmpty())
     {
-        int index = ui->VersionList->currentRow();
+        model = "";
+        model.append("0\n");
+        model.append("0 Name: ");
+        model.append(product.getName());
+        model.append(".ldr\n");
+        model.append("0 Author: ");
+        model.append("TODO");
+        model.append("\n");
 
-        if (index == 0)
+        QDialog::accept();
+    }
+    else
+    {
+        if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
         {
-            model = "";
-            model.append("0\n");
-            model.append("0 Name: ");
-            model.append(Product::INSTANCE.getName());
-            model.append(".ldr\n");
-            model.append("0 Author: ");
-            model.append("TODO");
-            model.append("\n");
+            QString path("/rest/files/");
+            path.append(version.getId());
+            path.append(".");
+            path.append(version.getModelType());
 
-            QDialog::accept();
+            QUrl url;
+            url.setScheme(ui->SchemeCombo->currentText());
+            url.setHost(ui->HostEdit->text());
+            url.setPort(ui->PortSpin->value());
+            url.setPath(path);
+
+            QString bearer("Bearer ");
+            bearer.append(ui->TokenEdit->text());
+
+            QNetworkRequest request(url);
+            request.setRawHeader("Authorization", bearer.toUtf8());
+
+            nam->get(request);
         }
         else
         {
-            const Version& version = Version::INSTANCES[index - 1];
-
-            if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
-            {
-                QString path("/rest/files/");
-                path.append(version.getId());
-                path.append(".");
-                path.append(version.getModelType());
-
-                QUrl url;
-                url.setScheme(Hub::get().getScheme());
-                url.setHost(Hub::get().getHost());
-                url.setPort(Hub::get().getPort());
-                url.setPath(path);
-
-                QString bearer("Bearer ");
-                bearer.append(Hub::get().getToken());
-
-                QNetworkRequest request(url);
-                request.setRawHeader("Authorization", bearer.toUtf8());
-
-                nam->get(request);
-            }
-            else
-            {
-                ui->ErrorLabel->setText("Model type not supported");
-            }
+            ui->ErrorLabel->setText("Model type not supported");
         }
     }
 }
@@ -127,13 +120,14 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
 
                             Product product(object);
 
-                            ui->ProductList->insertItem(0, product.toString());
+                            products.insert(0, product);
 
-                            Product::INSTANCES.insert(0, product);
+                            ui->ProductList->insertItem(0, product.toString());
                         }
                     }
 
                     ui->ProductList->setEnabled(true);
+
                     ui->ProductLabel->setEnabled(true);
                 }
             }
@@ -169,15 +163,16 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
 
                         Version version(object);
 
-                        ui->VersionList->insertItem(0, version.toString());
+                        versions.insert(0, version);
 
-                        Version::INSTANCES.insert(0, version);
+                        ui->VersionList->insertItem(0, version.toString());
                     }
                 }
 
                 ui->VersionList->insertItem(0, "Start from scratch");
 
                 ui->VersionList->setEnabled(true);
+
                 ui->VersionLabel->setEnabled(true);
             }
             else
@@ -209,6 +204,29 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
         }
         else
         {
+            // Update hub
+            Hub::INSTANCE.setScheme(ui->SchemeCombo->currentText());
+            Hub::INSTANCE.setHost(ui->HostEdit->text());
+            Hub::INSTANCE.setPort(ui->PortSpin->value());
+            Hub::INSTANCE.setToken(ui->TokenEdit->text());
+
+            // Update products
+            Product::INSTANCES = products;
+
+            // Update product
+            Product::INSTANCE = product;
+
+            // Update versions
+            Version::INSTANCES = versions;
+
+            // Update version
+            Version::BASES.clear();
+            if (!version.isEmpty())
+            {
+                Version::BASES.append(version);
+            }
+
+            // Update model
             model = reply->readAll();
 
             QDialog::accept();
@@ -220,13 +238,11 @@ void lcQHubLoadDialog::on_LoadButton_clicked()
 {
     qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString();
 
-    Hub::get().setScheme(ui->SchemeCombo->currentText());
-    Hub::get().setHost(ui->HostEdit->text());
-    Hub::get().setPort(ui->PortSpin->value());
-    Hub::get().setToken(ui->TokenEdit->text());
+    products.clear();
 
     ui->ProductList->clear();
     ui->ProductList->setDisabled(true);
+
     ui->ProductLabel->setDisabled(true);
 
     QUrl url;
@@ -246,19 +262,20 @@ void lcQHubLoadDialog::on_LoadButton_clicked()
 
 void lcQHubLoadDialog::on_ProductList_itemSelectionChanged()
 {
+    product = Product();
+
+    versions.clear();
+
     ui->VersionList->clear();
     ui->VersionList->setDisabled(true);
+
     ui->VersionLabel->setDisabled(true);
-
-    Version::INSTANCES.clear();
-
-    Version::BASES.clear();
 
     if (ui->ProductList->selectedItems().size() == 1)
     {
-        int index = ui->ProductList->currentRow();
+        int productIdx = ui->ProductList->currentRow();
 
-        const Product& product = Product::INSTANCES[index];
+        product = products[productIdx];
 
         QUrlQuery query;
         query.addQueryItem("product", product.getId());
@@ -277,19 +294,14 @@ void lcQHubLoadDialog::on_ProductList_itemSelectionChanged()
         request.setRawHeader("Authorization", bearer.toUtf8());
 
         nam->get(request);
-
-        Product::INSTANCE = product;
-    }
-    else
-    {
-        Product::INSTANCE = Product();
     }
 }
 
 void lcQHubLoadDialog::on_VersionList_itemSelectionChanged()
 {
-    image = QPixmap(1000, 1000);
+    version = Version();
 
+    image = QPixmap(1000, 1000);
     image.fill(Qt::transparent);
 
     int height = ui->VersionImage->height();
@@ -298,15 +310,13 @@ void lcQHubLoadDialog::on_VersionList_itemSelectionChanged()
 
     ui->ErrorLabel->setText("");
 
-    Version::BASES.clear();
-
     if (ui->VersionList->selectedItems().size() == 1)
     {
-        int index = ui->VersionList->currentRow();
+        int versionIdx = ui->VersionList->currentRow();
 
-        if (index > 0)
+        if (versionIdx > 0)
         {
-            const Version& version = Version::INSTANCES[index - 1];
+            version = versions[versionIdx - 1];
 
             QString path("/rest/files/");
             path.append(version.getId());
@@ -314,20 +324,18 @@ void lcQHubLoadDialog::on_VersionList_itemSelectionChanged()
             path.append(version.getImageType());
 
             QUrl url;
-            url.setScheme(Hub::get().getScheme());
-            url.setHost(Hub::get().getHost());
-            url.setPort(Hub::get().getPort());
+            url.setScheme(ui->SchemeCombo->currentText());
+            url.setHost(ui->HostEdit->text());
+            url.setPort(ui->PortSpin->value());
             url.setPath(path);
 
             QString bearer("Bearer ");
-            bearer.append(Hub::get().getToken());
+            bearer.append(ui->TokenEdit->text());
 
             QNetworkRequest request(url);
             request.setRawHeader("Authorization", bearer.toUtf8());
 
             nam->get(request);
-
-            Version::BASES.append(version);
         }
 
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);

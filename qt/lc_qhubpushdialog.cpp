@@ -11,7 +11,7 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
 {
     ui->setupUi(this);
 
-    ui->HubEdit->setText(Hub::get().toString());
+    ui->HubEdit->setText(Hub::INSTANCE.toString());
     ui->ProductEdit->setText(Product::INSTANCE.toString());
 
     ui->BaseVersionList->clear();
@@ -87,13 +87,13 @@ lcQHubPushDialog::~lcQHubPushDialog()
 void lcQHubPushDialog::accept()
 {
     QUrl url;
-    url.setScheme(Hub::get().getScheme());
-    url.setHost(Hub::get().getHost());
-    url.setPort(Hub::get().getPort());
+    url.setScheme(Hub::INSTANCE.getScheme());
+    url.setHost(Hub::INSTANCE.getHost());
+    url.setPort(Hub::INSTANCE.getPort());
     url.setPath("/rest/versions");
 
     QString bearer("Bearer ");
-    bearer.append(Hub::get().getToken());
+    bearer.append(Hub::INSTANCE.getToken());
 
     QNetworkRequest request(url);
     request.setRawHeader("Authorization", bearer.toUtf8());

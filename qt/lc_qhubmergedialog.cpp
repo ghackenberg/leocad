@@ -10,7 +10,7 @@ lcQHubMergeDialog::lcQHubMergeDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->ServerEdit->setText(Hub::get().toString());
+    ui->ServerEdit->setText(Hub::INSTANCE.toString());
 
     ui->ProductEdit->setText(Product::INSTANCE.toString());
 
@@ -77,13 +77,13 @@ void lcQHubMergeDialog::accept()
             path.append(version.getModelType());
 
             QUrl url;
-            url.setScheme(Hub::get().getScheme());
-            url.setHost(Hub::get().getHost());
-            url.setPort(Hub::get().getPort());
+            url.setScheme(Hub::INSTANCE.getScheme());
+            url.setHost(Hub::INSTANCE.getHost());
+            url.setPort(Hub::INSTANCE.getPort());
             url.setPath(path);
 
             QString bearer("Bearer ");
-            bearer.append(Hub::get().getToken());
+            bearer.append(Hub::INSTANCE.getToken());
 
             QNetworkRequest request(url);
             request.setRawHeader("Authorization", bearer.toUtf8());
@@ -159,13 +159,13 @@ void lcQHubMergeDialog::on_AdditionalVersionList_itemSelectionChanged()
         path.append(version.getImageType());
 
         QUrl url;
-        url.setScheme(Hub::get().getScheme());
-        url.setHost(Hub::get().getHost());
-        url.setPort(Hub::get().getPort());
+        url.setScheme(Hub::INSTANCE.getScheme());
+        url.setHost(Hub::INSTANCE.getHost());
+        url.setPort(Hub::INSTANCE.getPort());
         url.setPath(path);
 
         QString bearer("Bearer ");
-        bearer.append(Hub::get().getToken());
+        bearer.append(Hub::INSTANCE.getToken());
 
         QNetworkRequest request(url);
         request.setRawHeader("Authorization", bearer.toUtf8());
