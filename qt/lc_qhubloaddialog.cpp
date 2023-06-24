@@ -45,6 +45,25 @@ void lcQHubLoadDialog::accept()
 {
     if (version.isEmpty())
     {
+        // Update hub
+        Hub::INSTANCE.setScheme(ui->SchemeCombo->currentText());
+        Hub::INSTANCE.setHost(ui->HostEdit->text());
+        Hub::INSTANCE.setPort(ui->PortSpin->value());
+        Hub::INSTANCE.setToken(ui->TokenEdit->text());
+
+        // Update products
+        Product::INSTANCES = products;
+
+        // Update product
+        Product::INSTANCE = product;
+
+        // Update versions
+        Version::INSTANCES = versions;
+
+        // Update version
+        Version::BASES.clear();
+
+        // Update model
         model = "";
         model.append("0\n");
         model.append("0 Name: ");
