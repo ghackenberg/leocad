@@ -12,18 +12,24 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
     ui->setupUi(this);
 
     ui->HubEdit->setText(Hub::INSTANCE.toString());
+
     ui->ProductEdit->setText(Product::INSTANCE.toString());
 
-    ui->BaseVersionList->clear();
     for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
     {
         const Version version = (*iter);
         ui->BaseVersionList->addItem(version.toString());
     }
 
+    ui->MajorLabel->setDisabled(true);
+    ui->MinorLabel->setDisabled(true);
+    ui->PatchLabel->setDisabled(true);
+
     ui->MajorSpin->setDisabled(true);
     ui->MinorSpin->setDisabled(true);
     ui->PatchSpin->setDisabled(true);
+
+    ui->DescriptionLabel->setDisabled(true);
 
     ui->DescriptionEdit->setDisabled(true);
 
@@ -219,9 +225,15 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
                 ui->MinorSpin->setValue(minor);
                 ui->PatchSpin->setValue(patch);
 
+                ui->MajorLabel->setDisabled(false);
+                ui->MinorLabel->setDisabled(false);
+                ui->PatchLabel->setDisabled(false);
+
                 ui->MajorSpin->setDisabled(false);
                 ui->MinorSpin->setDisabled(false);
                 ui->PatchSpin->setDisabled(false);
+
+                ui->DescriptionLabel->setDisabled(false);
 
                 ui->DescriptionEdit->setDisabled(false);
             }

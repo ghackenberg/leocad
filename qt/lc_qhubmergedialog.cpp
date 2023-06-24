@@ -137,9 +137,9 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
                     }
                 }
 
-                ui->AdditionalVersionList->setEnabled(true);
-
                 ui->AdditionalVersionLabel->setEnabled(true);
+
+                ui->AdditionalVersionList->setEnabled(true);
             }
             else
             {

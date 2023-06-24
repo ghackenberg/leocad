@@ -19,17 +19,18 @@ lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
     ui->TokenEdit->setText(Hub::INSTANCE.getToken());
 
     ui->ProductList->setDisabled(true);
+
     ui->ProductLabel->setDisabled(true);
+
+    ui->VersionLabel->setDisabled(true);
+
+    ui->VersionList->setDisabled(true);
 
     image.fill(Qt::transparent);
 
     int height = ui->VersionList->height();
 
-    ui->VersionList->setDisabled(true);
-
     ui->VersionImage->setPixmap(image.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    ui->VersionLabel->setDisabled(true);
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setDisabled(true);
 
