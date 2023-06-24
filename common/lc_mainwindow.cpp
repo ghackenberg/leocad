@@ -2361,7 +2361,7 @@ void lcMainWindow::HubLoad()
 
     if (Dialog.exec() == QDialog::Accepted)
     {
-        QString name("hub.ldr");
+        QString name(QDir::homePath() + "/CADdrive.ldr");
 
         QFile file(name);
 
@@ -2391,7 +2391,7 @@ void lcMainWindow::HubMerge()
 
     if (Dialog.exec() == QDialog::Accepted)
     {
-        QString name("hub_merge.ldr");
+        QString name(QDir::homePath() + "/CADdrive_merge.ldr");
 
         QFile file(name);
 

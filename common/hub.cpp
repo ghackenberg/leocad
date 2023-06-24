@@ -55,7 +55,7 @@ void Hub::load()
 
 void Hub::save() const
 {
-    QString name("hub.json");
+    QString name(QDir::homePath() + "/CADdrive.json");
 
     QFile file(name);
 
