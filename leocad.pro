@@ -216,6 +216,7 @@ SOURCES += \
 	common/user.cpp \
 	common/version.cpp \
 	qt/lc_qhubloaddialog.cpp \
+	qt/lc_qhubmergedialog.cpp \
 	qt/lc_qhubpushdialog.cpp \
 	qt/system.cpp \
 	qt/qtmain.cpp \
@@ -297,6 +298,7 @@ HEADERS += \
 	qt/lc_qaboutdialog.h \
 	qt/lc_qeditgroupsdialog.h \
 	qt/lc_qhubloaddialog.h \
+	qt/lc_qhubmergedialog.h \
 	qt/lc_qhubpushdialog.h \
 	qt/lc_qselectdialog.h \
 	qt/lc_qpropertiesdialog.h \
@@ -319,6 +321,7 @@ FORMS += \
 	qt/lc_qaboutdialog.ui \
 	qt/lc_qeditgroupsdialog.ui \
 	qt/lc_qhubloaddialog.ui \
+	qt/lc_qhubmergedialog.ui \
 	qt/lc_qhubpushdialog.ui \
 	qt/lc_qselectdialog.ui \
 	qt/lc_qpropertiesdialog.ui \

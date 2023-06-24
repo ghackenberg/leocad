@@ -10,6 +10,7 @@
 #include "lc_qpropertiestree.h"
 #include "lc_qutils.h"
 #include "lc_qhubloaddialog.h"
+#include "lc_qhubmergedialog.h"
 #include "lc_qhubpushdialog.h"
 #include "lc_qupdatedialog.h"
 #include "lc_qaboutdialog.h"
@@ -2385,6 +2386,45 @@ void lcMainWindow::HubMerge()
 {
     if (!SaveProjectIfModified())
         return;
+
+    lcQHubMergeDialog Dialog(this);
+
+    if (Dialog.exec() == QDialog::Accepted)
+    {
+        /*
+        QString name("hub_merge.ldr");
+
+        QFile file(name);
+
+        if (file.open(QIODevice::WriteOnly))
+        {
+            file.write(Dialog.getModel().toUtf8());
+            file.close();
+
+            Project* NewProject = new Project();
+
+            if (NewProject->Load(name, true))
+            {
+                int NumModels = NewProject->GetModels().GetSize();
+
+                lcGetActiveProject()->Merge(NewProject);
+
+                if (NumModels == 1)
+                    QMessageBox::information(this, tr("LeoCAD"), tr("Merged 1 submodel."));
+                else
+                    QMessageBox::information(this, tr("LeoCAD"), tr("Merged %1 submodels.").arg(NumModels));
+
+                UpdateModels();
+            }
+
+            delete NewProject;
+        }
+        else
+        {
+            qInfo() << "Cannot open file";
+        }
+        */
+    }
 }
 
 void lcMainWindow::HubPush()
@@ -2498,7 +2538,7 @@ void lcMainWindow::MergeProject()
 	Project* NewProject = new Project();
 
 	if (NewProject->Load(LoadFileName, true))
-	{
+    {
 		int NumModels = NewProject->GetModels().GetSize();
 
 		lcGetActiveProject()->Merge(NewProject);

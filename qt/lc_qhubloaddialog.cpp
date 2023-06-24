@@ -1,7 +1,7 @@
 #include <QNetworkReply>
-#include "hub.h"
 #include "lc_qhubloaddialog.h"
 #include "ui_lc_qhubloaddialog.h"
+#include "hub.h"
 #include "product.h"
 #include "version.h"
 
@@ -34,8 +34,6 @@ lcQHubLoadDialog::lcQHubLoadDialog(QWidget* Parent)
     ui->buttonBox->button(QDialogButtonBox::Ok)->setDisabled(true);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
-
-    setWindowTitle("Load model from CADdrive");
 }
 
 lcQHubLoadDialog::~lcQHubLoadDialog()

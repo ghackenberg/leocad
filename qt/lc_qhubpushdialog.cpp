@@ -77,8 +77,6 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
     ui->buttonBox->button(QDialogButtonBox::Ok)->setDisabled(true);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
-
-    setWindowTitle("Push model to CADdrive");
 }
 
 lcQHubPushDialog::~lcQHubPushDialog()

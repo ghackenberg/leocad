@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Push model to LeoHub</string>
+   <string>Push model to CADdrive</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
