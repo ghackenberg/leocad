@@ -159,12 +159,16 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
 
             Version version(object);
 
-            Version::INSTANCES.append(version);
+            Version::INSTANCES.insert(0, version);
 
             Version::BASES.clear();
             Version::BASES.append(version);
 
             QDialog::accept();
+        }
+        else
+        {
+            ui->ErrorLabel->setText("Server response not supported");
         }
     }
 }
