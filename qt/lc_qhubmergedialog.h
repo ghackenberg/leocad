@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QNetworkAccessManager>
+#include "version.h"
 
 namespace Ui {
 class lcQHubMergeDialog;
@@ -34,6 +35,8 @@ private:
     Ui::lcQHubMergeDialog* ui;
 
     QNetworkAccessManager* nam;
+
+    Version version;
 
     QPixmap image;
     QString model;

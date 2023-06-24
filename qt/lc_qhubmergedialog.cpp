@@ -63,37 +63,30 @@ lcQHubMergeDialog::~lcQHubMergeDialog()
 
 void lcQHubMergeDialog::accept()
 {
-    if (ui->AdditionalVersionList->selectedItems().size() == 1)
+    if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
     {
-        int index = ui->AdditionalVersionList->currentRow();
+        QString path("/rest/files/");
+        path.append(version.getId());
+        path.append(".");
+        path.append(version.getModelType());
 
-        const Version& version = Version::INSTANCES[index];
+        QUrl url;
+        url.setScheme(Hub::INSTANCE.getScheme());
+        url.setHost(Hub::INSTANCE.getHost());
+        url.setPort(Hub::INSTANCE.getPort());
+        url.setPath(path);
 
-        if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
-        {
-            QString path("/rest/files/");
-            path.append(version.getId());
-            path.append(".");
-            path.append(version.getModelType());
+        QString bearer("Bearer ");
+        bearer.append(Hub::INSTANCE.getToken());
 
-            QUrl url;
-            url.setScheme(Hub::INSTANCE.getScheme());
-            url.setHost(Hub::INSTANCE.getHost());
-            url.setPort(Hub::INSTANCE.getPort());
-            url.setPath(path);
+        QNetworkRequest request(url);
+        request.setRawHeader("Authorization", bearer.toUtf8());
 
-            QString bearer("Bearer ");
-            bearer.append(Hub::INSTANCE.getToken());
-
-            QNetworkRequest request(url);
-            request.setRawHeader("Authorization", bearer.toUtf8());
-
-            nam->get(request);
-        }
-        else
-        {
-            ui->ErrorLabel->setText("Model type not supported");
-        }
+        nam->get(request);
+    }
+    else
+    {
+        ui->ErrorLabel->setText("Model type not supported");
     }
 }
 
@@ -122,10 +115,6 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
         }
         else
         {
-            int index = ui->AdditionalVersionList->currentRow();
-
-            const Version& version = Version::INSTANCES[index];
-
             Version::BASES.append(version);
 
             model = reply->readAll();
@@ -137,8 +126,9 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
 
 void lcQHubMergeDialog::on_AdditionalVersionList_itemSelectionChanged()
 {
-    image = QPixmap(1000, 1000);
+    version = Version();
 
+    image = QPixmap(1000, 1000);
     image.fill(Qt::transparent);
 
     int height = ui->AdditionalVersionImage->height();
@@ -151,7 +141,7 @@ void lcQHubMergeDialog::on_AdditionalVersionList_itemSelectionChanged()
     {
         int index = ui->AdditionalVersionList->currentRow();
 
-        const Version& version = Version::INSTANCES[index];
+        version = Version::INSTANCES[index];
 
         QString path("/rest/files/");
         path.append(version.getId());
