@@ -51,17 +51,11 @@ void lcQHubLoadDialog::accept()
         Hub::INSTANCE.setPort(ui->PortSpin->value());
         Hub::INSTANCE.setToken(ui->TokenEdit->text());
 
-        // Update products
-        Product::INSTANCES = products;
-
         // Update product
         Product::INSTANCE = product;
 
-        // Update versions
-        Version::INSTANCES = versions;
-
         // Update version
-        Version::BASES.clear();
+        Version::INSTANCES.clear();
 
         // Update model
         model = "";
@@ -107,7 +101,7 @@ void lcQHubLoadDialog::accept()
 
 void lcQHubLoadDialog::finished(QNetworkReply* reply)
 {
-    if (ui->ProductList->selectedItems().size() == 0)
+    if (reply->request().url().path().endsWith("/rest/products"))
     {
         if (reply->error())
         {
@@ -156,7 +150,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
             }
         }
     }
-    else if (ui->VersionList->selectedItems().size() == 0)
+    else if (reply->request().url().path().endsWith("/rest/versions"))
     {
         if (reply->error())
         {
@@ -215,7 +209,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
             ui->VersionImage->setPixmap(image.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
     }
-    else
+    else if (reply->request().url().path().endsWith("ldr") || reply->request().url().path().endsWith("mpd"))
     {
         if (reply->error())
         {
@@ -229,20 +223,14 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
             Hub::INSTANCE.setPort(ui->PortSpin->value());
             Hub::INSTANCE.setToken(ui->TokenEdit->text());
 
-            // Update products
-            Product::INSTANCES = products;
-
             // Update product
             Product::INSTANCE = product;
 
-            // Update versions
-            Version::INSTANCES = versions;
-
             // Update version
-            Version::BASES.clear();
+            Version::INSTANCES.clear();
             if (!version.isEmpty())
             {
-                Version::BASES.append(version);
+                Version::INSTANCES.append(version);
             }
 
             // Update model

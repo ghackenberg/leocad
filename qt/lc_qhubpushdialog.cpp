@@ -15,86 +15,39 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
     ui->ProductEdit->setText(Product::INSTANCE.toString());
 
     ui->BaseVersionList->clear();
-    for (QList<Version>::const_iterator iter = Version::BASES.cbegin(); iter != Version::BASES.cend(); iter++)
+    for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
     {
         const Version version = (*iter);
         ui->BaseVersionList->addItem(version.toString());
     }
 
-    unsigned int major = 0;
-    unsigned int minor = 0;
-    unsigned int patch = 0;
+    ui->MajorSpin->setDisabled(true);
+    ui->MinorSpin->setDisabled(true);
+    ui->PatchSpin->setDisabled(true);
 
-    if (Version::BASES.empty())
-    {
-        // Find latest major version
-        for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
-        {
-            const Version version = (*iter);
-            if (major < version.getMajor()) {
-                major = version.getMajor();
-                minor = version.getMinor();
-                patch = version.getPatch();
-            } else if (major == version.getMajor()) {
-                if (minor < version.getMinor()) {
-                    minor = version.getMinor();
-                    patch = version.getPatch();
-                } else if (minor == version.getMinor()) {
-                    if (patch < version.getPatch()) {
-                        patch = version.getPatch();
-                    }
-                }
-            }
-        }
-        // Increase latest major version
-        major = major + 1;
-        minor = 0;
-        patch = 0;
-    }
-    else
-    {
-        // Find latest major base version
-        for (QList<Version>::const_iterator iter = Version::BASES.cbegin(); iter != Version::BASES.cend(); iter++)
-        {
-            const Version version = (*iter);
-            if (major < version.getMajor()) {
-                major = version.getMajor();
-                minor = version.getMinor();
-                patch = version.getPatch();
-            } else if (major == version.getMajor()) {
-                if (minor < version.getMinor()) {
-                    minor = version.getMinor();
-                    patch = version.getPatch();
-                } else if (minor == version.getMinor()) {
-                    if (patch < version.getPatch()) {
-                        patch = version.getPatch();
-                    }
-                }
-            }
-        }
-        // Find latest patch version for that major version
-        for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
-        {
-            const Version version = (*iter);
-            if (major == version.getMajor()) {
-                if (minor == version.getMinor()) {
-                    if (patch < version.getPatch()) {
-                        patch = version.getPatch();
-                    }
-                }
-            }
-        }
-        // Increase latest patch version
-        patch = patch + 1;
-    }
-
-    ui->MajorSpin->setValue(major);
-    ui->MinorSpin->setValue(minor);
-    ui->PatchSpin->setValue(patch);
+    ui->DescriptionEdit->setDisabled(true);
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setDisabled(true);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
+
+    QUrlQuery query;
+    query.addQueryItem("product", Product::INSTANCE.getId());
+
+    QUrl url;
+    url.setScheme(Hub::INSTANCE.getScheme());
+    url.setHost(Hub::INSTANCE.getHost());
+    url.setPort(Hub::INSTANCE.getPort());
+    url.setPath("/rest/versions");
+    url.setQuery(query);
+
+    QString bearer("Bearer ");
+    bearer.append(Hub::INSTANCE.getToken());
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", bearer.toUtf8());
+
+    nam->get(request);
 }
 
 lcQHubPushDialog::~lcQHubPushDialog()
@@ -119,7 +72,7 @@ void lcQHubPushDialog::accept()
     QHttpMultiPart* multipart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 
     QJsonArray baseVersionIds;
-    for (QList<Version>::const_iterator iter = Version::BASES.cbegin(); iter != Version::BASES.cend(); iter++)
+    for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
     {
         const Version version = (*iter);
         baseVersionIds.append(version.getId());
@@ -162,31 +115,148 @@ void lcQHubPushDialog::accept()
 
 void lcQHubPushDialog::finished(QNetworkReply* reply)
 {
-    if (reply->error())
+    if (reply->request().url().path().endsWith("/rest/versions") && reply->request().url().hasQuery())
     {
-        ui->ErrorLabel->setText(reply->errorString());
-    }
-    else
-    {
-        QByteArray content = reply->readAll();
-
-        QJsonDocument document = QJsonDocument::fromJson(content);
-
-        if (document.isObject()) {
-            QJsonObject object = document.object();
-
-            Version version(object);
-
-            Version::INSTANCES.insert(0, version);
-
-            Version::BASES.clear();
-            Version::BASES.append(version);
-
-            QDialog::accept();
+        if (reply->error())
+        {
+            ui->ErrorLabel->setText(reply->errorString());
         }
         else
         {
-            ui->ErrorLabel->setText("Server response not supported");
+            QByteArray content = reply->readAll();
+
+            QJsonDocument document = QJsonDocument::fromJson(content);
+
+            if (document.isArray())
+            {
+                QJsonArray array = document.array();
+
+                for (int index = 0; index < array.size(); index++)
+                {
+                    QJsonValue item = array[index];
+
+                    if (item.isObject())
+                    {
+                        QJsonObject object = array[index].toObject();
+
+                        Version version(object);
+
+                        versions.append(version);
+                    }
+                }
+
+                unsigned int major = 0;
+                unsigned int minor = 0;
+                unsigned int patch = 0;
+
+                if (Version::INSTANCES.empty())
+                {
+                    if (!versions.empty())
+                    {
+                        // Find latest major version
+                        for (QList<Version>::const_iterator iter = versions.cbegin(); iter != versions.cend(); iter++)
+                        {
+                            const Version version = (*iter);
+                            if (major < version.getMajor()) {
+                                major = version.getMajor();
+                                minor = version.getMinor();
+                                patch = version.getPatch();
+                            } else if (major == version.getMajor()) {
+                                if (minor < version.getMinor()) {
+                                    minor = version.getMinor();
+                                    patch = version.getPatch();
+                                } else if (minor == version.getMinor()) {
+                                    if (patch < version.getPatch()) {
+                                        patch = version.getPatch();
+                                    }
+                                }
+                            }
+                        }
+                        // Increase latest major version
+                        major = major + 1;
+                        minor = 0;
+                        patch = 0;
+                    }
+                }
+                else
+                {
+                    // Find latest major base version
+                    for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
+                    {
+                        const Version version = (*iter);
+                        if (major < version.getMajor()) {
+                            major = version.getMajor();
+                            minor = version.getMinor();
+                            patch = version.getPatch();
+                        } else if (major == version.getMajor()) {
+                            if (minor < version.getMinor()) {
+                                minor = version.getMinor();
+                                patch = version.getPatch();
+                            } else if (minor == version.getMinor()) {
+                                if (patch < version.getPatch()) {
+                                    patch = version.getPatch();
+                                }
+                            }
+                        }
+                    }
+                    // Find latest patch version for that major version
+                    for (QList<Version>::const_iterator iter = versions.cbegin(); iter != versions.cend(); iter++)
+                    {
+                        const Version version = (*iter);
+                        if (major == version.getMajor()) {
+                            if (minor == version.getMinor()) {
+                                if (patch < version.getPatch()) {
+                                    patch = version.getPatch();
+                                }
+                            }
+                        }
+                    }
+                    // Increase latest patch version
+                    patch = patch + 1;
+                }
+
+                ui->MajorSpin->setValue(major);
+                ui->MinorSpin->setValue(minor);
+                ui->PatchSpin->setValue(patch);
+
+                ui->MajorSpin->setDisabled(false);
+                ui->MinorSpin->setDisabled(false);
+                ui->PatchSpin->setDisabled(false);
+
+                ui->DescriptionEdit->setDisabled(false);
+            }
+            else
+            {
+                ui->ErrorLabel->setText("Reponse invalid.");
+            }
+        }
+    }
+    else if (reply->request().url().path().endsWith("/rest/versions") && !reply->request().url().hasQuery())
+    {
+        if (reply->error())
+        {
+            ui->ErrorLabel->setText(reply->errorString());
+        }
+        else
+        {
+            QByteArray content = reply->readAll();
+
+            QJsonDocument document = QJsonDocument::fromJson(content);
+
+            if (document.isObject()) {
+                QJsonObject object = document.object();
+
+                Version version(object);
+
+                Version::INSTANCES.clear();
+                Version::INSTANCES.append(version);
+
+                QDialog::accept();
+            }
+            else
+            {
+                ui->ErrorLabel->setText("Server response not supported");
+            }
         }
     }
 }

@@ -44,21 +44,21 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="CurrentVersionsLabel">
-       <property name="text">
-        <string>Current Base Versions</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QListWidget" name="CurrentVersionsList">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="CurrentVersionsLabel">
+     <property name="text">
+      <string>Current Base Versions</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListWidget" name="CurrentVersionsList">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="AdditionalVersionLabel">

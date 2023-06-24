@@ -1,7 +1,5 @@
 #include "product.h"
 
-QList<Product> Product::INSTANCES;
-
 Product Product::INSTANCE;
 
 Product::Product(const QJsonObject& object)

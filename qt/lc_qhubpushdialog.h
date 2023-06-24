@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QNetworkAccessManager>
+#include "version.h"
 
 namespace Ui
 {
@@ -27,5 +28,8 @@ private:
 
     QNetworkAccessManager* nam;
 
+    bool ready = false;
+
+    QList<Version> versions;
 };
 

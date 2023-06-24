@@ -14,36 +14,15 @@ lcQHubMergeDialog::lcQHubMergeDialog(QWidget *parent) :
 
     ui->ProductEdit->setText(Product::INSTANCE.toString());
 
-    for (QList<Version>::const_iterator iter = Version::BASES.cbegin(); iter != Version::BASES.cend(); iter++)
+    for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
     {
         const Version version = (*iter);
         ui->CurrentVersionsList->addItem(version.toString());
     }
 
-    for (QList<Version>::const_iterator outerIter = Version::INSTANCES.cbegin(); outerIter != Version::INSTANCES.cend(); outerIter++)
-    {
-        const Version outerVersion = (*outerIter);
+    ui->AdditionalVersionLabel->setDisabled(true);
 
-        bool skip = false;
-
-        for (QList<Version>::const_iterator innerIter = Version::BASES.cbegin(); innerIter != Version::BASES.cend(); innerIter++)
-        {
-            const Version innerVersion = (*innerIter);
-
-            if (outerVersion.getId().compare(innerVersion.getId()) == 0)
-            {
-                skip = true;
-                break;
-            }
-        }
-
-        if (!skip)
-        {
-            versions.append(outerVersion);
-
-            ui->AdditionalVersionList->addItem(outerVersion.toString());
-        }
-    }
+    ui->AdditionalVersionList->setDisabled(true);
 
     image.fill(Qt::transparent);
 
@@ -54,6 +33,24 @@ lcQHubMergeDialog::lcQHubMergeDialog(QWidget *parent) :
     ui->buttonBox->button(QDialogButtonBox::Ok)->setDisabled(true);
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
+
+    QUrlQuery query;
+    query.addQueryItem("product", Product::INSTANCE.getId());
+
+    QUrl url;
+    url.setScheme(Hub::INSTANCE.getScheme());
+    url.setHost(Hub::INSTANCE.getHost());
+    url.setPort(Hub::INSTANCE.getPort());
+    url.setPath("/rest/versions");
+    url.setQuery(query);
+
+    QString bearer("Bearer ");
+    bearer.append(Hub::INSTANCE.getToken());
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", bearer.toUtf8());
+
+    nam->get(request);
 }
 
 lcQHubMergeDialog::~lcQHubMergeDialog()
@@ -92,7 +89,65 @@ void lcQHubMergeDialog::accept()
 
 void lcQHubMergeDialog::finished(QNetworkReply* reply)
 {
-    if (reply->request().url().path().endsWith("png"))
+    if (reply->request().url().path().endsWith("/rest/versions"))
+    {
+        if (reply->error())
+        {
+            ui->AdditionalVersionList->addItem(reply->errorString());
+        }
+        else
+        {
+            QByteArray content = reply->readAll();
+
+            QJsonDocument document = QJsonDocument::fromJson(content);
+
+            if (document.isArray())
+            {
+                QJsonArray array = document.array();
+
+                for (int index = 0; index < array.size(); index++)
+                {
+                    QJsonValue item = array[index];
+
+                    if (item.isObject())
+                    {
+                        QJsonObject object = array[index].toObject();
+
+                        Version outerVersion(object);
+
+                        bool skip = false;
+
+                        for (QList<Version>::const_iterator innerIter = Version::INSTANCES.cbegin(); innerIter != Version::INSTANCES.cend(); innerIter++)
+                        {
+                            const Version innerVersion = (*innerIter);
+
+                            if (outerVersion.getId().compare(innerVersion.getId()) == 0)
+                            {
+                                skip = true;
+                                break;
+                            }
+                        }
+
+                        if (!skip)
+                        {
+                            versions.insert(0, version);
+
+                            ui->AdditionalVersionList->insertItem(0, outerVersion.toString());
+                        }
+                    }
+                }
+
+                ui->AdditionalVersionList->setEnabled(true);
+
+                ui->AdditionalVersionLabel->setEnabled(true);
+            }
+            else
+            {
+                ui->AdditionalVersionList->addItem("Reponse invalid.");
+            }
+        }
+    }
+    else if (reply->request().url().path().endsWith("png"))
     {
         if (reply->error())
         {
@@ -107,7 +162,7 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
             ui->AdditionalVersionImage->setPixmap(image.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
     }
-    else
+    else if (reply->request().url().path().endsWith("ldr") || reply->request().url().path().endsWith("mpd"))
     {
         if (reply->error())
         {
@@ -115,7 +170,7 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
         }
         else
         {
-            Version::BASES.append(version);
+            Version::INSTANCES.append(version);
 
             model = reply->readAll();
 

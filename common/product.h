@@ -3,8 +3,6 @@
 class Product
 {
 public:
-    static QList<Product> INSTANCES;
-
     static Product INSTANCE;
 
 public:

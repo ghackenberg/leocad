@@ -4,7 +4,6 @@ class Version
 {
 public:
     static QList<Version> INSTANCES;
-    static QList<Version> BASES;
 
 public:
     Version()

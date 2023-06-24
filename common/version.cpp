@@ -2,8 +2,6 @@
 
 QList<Version> Version::INSTANCES;
 
-QList<Version> Version::BASES;
-
 Version::Version(const QJsonObject& object)
     : empty(false)
 {
