@@ -36,15 +36,15 @@ lcQHubMergeDialog::lcQHubMergeDialog(QWidget *parent) :
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
 
-    QUrlQuery query;
-    query.addQueryItem("product", Product::INSTANCE.getId());
+    QString path("/rest/products/");
+    path.append(Product::INSTANCE.getProductId());
+    path.append("/versions");
 
     QUrl url;
     url.setScheme(Hub::INSTANCE.getScheme());
     url.setHost(Hub::INSTANCE.getHost());
     url.setPort(Hub::INSTANCE.getPort());
-    url.setPath("/rest/versions");
-    url.setQuery(query);
+    url.setPath(path);
 
     QString bearer("Bearer ");
     bearer.append(ui->TokenEdit->text());
@@ -65,7 +65,7 @@ void lcQHubMergeDialog::accept()
     if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
     {
         QString path("/rest/files/");
-        path.append(version.getId());
+        path.append(version.getVersionId());
         path.append(".");
         path.append(version.getModelType());
 
@@ -93,7 +93,7 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
 {
     qInfo() << "[lcQHubMergeDialog] " << reply->request().url();
 
-    if (reply->request().url().path().endsWith("/rest/versions"))
+    if (reply->request().url().path().endsWith("/versions"))
     {
         if (reply->error())
         {
@@ -125,7 +125,7 @@ void lcQHubMergeDialog::finished(QNetworkReply* reply)
                         {
                             const Version innerVersion = (*innerIter);
 
-                            if (outerVersion.getId().compare(innerVersion.getId()) == 0)
+                            if (outerVersion.getVersionId().compare(innerVersion.getVersionId()) == 0)
                             {
                                 skip = true;
                                 break;
@@ -213,7 +213,7 @@ void lcQHubMergeDialog::on_AdditionalVersionList_itemSelectionChanged()
         version = versions[index];
 
         QString path("/rest/files/");
-        path.append(version.getId());
+        path.append(version.getVersionId());
         path.append(".");
         path.append(version.getImageType());
 

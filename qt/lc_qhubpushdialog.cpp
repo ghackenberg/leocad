@@ -41,15 +41,15 @@ lcQHubPushDialog::lcQHubPushDialog(QWidget* Parent)
 
     connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
 
-    QUrlQuery query;
-    query.addQueryItem("product", Product::INSTANCE.getId());
+    QString path("/rest/products/");
+    path.append(Product::INSTANCE.getProductId());
+    path.append("/versions");
 
     QUrl url;
     url.setScheme(Hub::INSTANCE.getScheme());
     url.setHost(Hub::INSTANCE.getHost());
     url.setPort(Hub::INSTANCE.getPort());
-    url.setPath("/rest/versions");
-    url.setQuery(query);
+    url.setPath(path);
 
     QString bearer("Bearer ");
     bearer.append(ui->TokenEdit->text());
@@ -67,11 +67,15 @@ lcQHubPushDialog::~lcQHubPushDialog()
 
 void lcQHubPushDialog::accept()
 {
+    QString path("/rest/products/");
+    path.append(Product::INSTANCE.getProductId());
+    path.append("/versions");
+
     QUrl url;
     url.setScheme(Hub::INSTANCE.getScheme());
     url.setHost(Hub::INSTANCE.getHost());
     url.setPort(Hub::INSTANCE.getPort());
-    url.setPath("/rest/versions");
+    url.setPath(path);
 
     QString bearer("Bearer ");
     bearer.append(ui->TokenEdit->text());
@@ -85,11 +89,11 @@ void lcQHubPushDialog::accept()
     for (QList<Version>::const_iterator iter = Version::INSTANCES.cbegin(); iter != Version::INSTANCES.cend(); iter++)
     {
         const Version version = (*iter);
-        baseVersionIds.append(version.getId());
+        baseVersionIds.append(version.getVersionId());
     }
 
     QJsonObject dataJsonObject;
-    dataJsonObject.insert("productId", Product::INSTANCE.getId());
+    dataJsonObject.insert("productId", Product::INSTANCE.getProductId());
     dataJsonObject.insert("baseVersionIds", baseVersionIds);
     dataJsonObject.insert("major", ui->MajorSpin->value());
     dataJsonObject.insert("minor", ui->MajorSpin->value());
@@ -127,7 +131,7 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
 {
     qInfo() << "[lcQHubPushDialog] " << reply->request().url();
 
-    if (reply->request().url().path().endsWith("/rest/versions") && reply->request().url().hasQuery())
+    if (reply->request().url().path().endsWith("/versions") && reply->operation() == QNetworkAccessManager::GetOperation)
     {
         if (reply->error())
         {
@@ -251,7 +255,7 @@ void lcQHubPushDialog::finished(QNetworkReply* reply)
             }
         }
     }
-    else if (reply->request().url().path().endsWith("/rest/versions") && !reply->request().url().hasQuery())
+    else if (reply->request().url().path().endsWith("/versions") && reply->operation() == QNetworkAccessManager::PostOperation)
     {
         if (reply->error())
         {

@@ -5,8 +5,10 @@ Product Product::INSTANCE;
 Product::Product(const QJsonObject& object)
     : empty(false)
 {
-    id = object.value("id").toString();
+    productId = object.value("productId").toString();
+
     userId = object.value("userId").toString();
+
     name = object.value("name").toString();
     description = object.value("description").toString();
 }

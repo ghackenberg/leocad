@@ -13,14 +13,16 @@ public:
     }
     Product(const QJsonObject& object);
 
-    inline const QString& getId() const
+    inline const QString& getProductId() const
     {
-        return id;
+        return productId;
     }
+
     inline const QString& getUserId() const
     {
         return userId;
     }
+
     inline const QString& getName() const
     {
         return name;
@@ -38,7 +40,7 @@ public:
     QString toString() const;
 
 private:
-    QString id;
+    QString productId;
 
     QString userId;
 

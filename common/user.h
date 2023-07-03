@@ -5,10 +5,16 @@ class User
 public:
     User(const QJsonObject& object);
 
-    inline const QString& getId() const
+    inline const QString& getUserId() const
     {
-        return id;
+        return userId;
     }
+
+    inline const QString& getPictureId() const
+    {
+        return pictureId;
+    }
+
     inline const QString& getName() const
     {
         return name;
@@ -17,16 +23,14 @@ public:
     {
         return email;
     }
-    inline const QString& getPictureId() const
-    {
-        return pictureId;
-    }
 
     QString toString() const;
 
 private:
-    QString id;
+    QString userId;
+
+    QString pictureId;
+
     QString name;
     QString email;
-    QString pictureId;
 };

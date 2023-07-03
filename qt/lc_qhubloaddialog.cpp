@@ -76,7 +76,7 @@ void lcQHubLoadDialog::accept()
         if (version.getModelType().compare("ldr") == 0 || version.getModelType().compare("mpd") == 0)
         {
             QString path("/rest/files/");
-            path.append(version.getId());
+            path.append(version.getVersionId());
             path.append(".");
             path.append(version.getModelType());
 
@@ -105,7 +105,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
 {
     qInfo() << "[lcQHubLoadDialog] " << reply->request().url();
 
-    if (reply->request().url().path().endsWith("/rest/products"))
+    if (reply->request().url().path().endsWith("/products"))
     {
         if (reply->error())
         {
@@ -154,7 +154,7 @@ void lcQHubLoadDialog::finished(QNetworkReply* reply)
             }
         }
     }
-    else if (reply->request().url().path().endsWith("/rest/versions"))
+    else if (reply->request().url().path().endsWith("/versions"))
     {
         if (reply->error())
         {
@@ -289,15 +289,15 @@ void lcQHubLoadDialog::on_ProductList_itemSelectionChanged()
 
         product = products[productIdx];
 
-        QUrlQuery query;
-        query.addQueryItem("product", product.getId());
+        QString path("/rest/products/");
+        path.append(product.getProductId());
+        path.append("/versions");
 
         QUrl url;
         url.setScheme(ui->SchemeCombo->currentText());
         url.setHost(ui->HostEdit->text());
         url.setPort(ui->PortSpin->value());
-        url.setPath("/rest/versions");
-        url.setQuery(query);
+        url.setPath(path);
 
         QString bearer("Bearer ");
         bearer.append(ui->TokenEdit->text());
@@ -331,7 +331,7 @@ void lcQHubLoadDialog::on_VersionList_itemSelectionChanged()
             version = versions[versionIdx - 1];
 
             QString path("/rest/files/");
-            path.append(version.getId());
+            path.append(version.getVersionId());
             path.append(".");
             path.append(version.getImageType());
 

@@ -5,10 +5,10 @@ QList<Version> Version::INSTANCES;
 Version::Version(const QJsonObject& object)
     : empty(false)
 {
-    id = object.value("id").toString();
+    productId = object.value("productId").toString();
+    versionId = object.value("versionId").toString();
 
     userId = object.value("userId").toString();
-    productId = object.value("productId").toString();
 
     QJsonArray array = object.value("baseVersionIds").toArray();
     for (int index = 0; index < array.size(); index++)
