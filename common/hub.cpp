@@ -10,7 +10,7 @@ Hub::Hub()
 
 void Hub::load()
 {
-    QString name("hub.json");
+    QString name(QDir::homePath() + "/CADdrive.json");
 
     QFile file(name);
 
