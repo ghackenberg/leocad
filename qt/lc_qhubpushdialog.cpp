@@ -96,7 +96,7 @@ void lcQHubPushDialog::accept()
     dataJsonObject.insert("productId", Product::INSTANCE.getProductId());
     dataJsonObject.insert("baseVersionIds", baseVersionIds);
     dataJsonObject.insert("major", ui->MajorSpin->value());
-    dataJsonObject.insert("minor", ui->MajorSpin->value());
+    dataJsonObject.insert("minor", ui->MinorSpin->value());
     dataJsonObject.insert("patch", ui->PatchSpin->value());
     dataJsonObject.insert("description", ui->DescriptionEdit->toPlainText());
 
